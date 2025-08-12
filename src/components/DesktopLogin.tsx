@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react'
-import qrcode from 'qrcode-generator'
 import { getApiUrl } from '../config/api'
 
 interface DesktopLoginProps {
@@ -58,10 +57,6 @@ const DesktopLogin: React.FC<DesktopLoginProps> = ({ onLogin }) => {
       setErrorMessage(error instanceof Error ? error.message : 'Failed to generate QR code')
       setStatus('error')
     }
-  }
-
-  const generateNonce = (): string => {
-    return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
   }
 
   const startListeningForUpdates = (challengeId: string) => {
