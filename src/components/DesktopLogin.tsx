@@ -24,32 +24,31 @@ const DesktopLogin: React.FC<DesktopLoginProps> = ({ onLogin }) => {
       setErrorMessage('')
       
       const response = await fetch(getApiUrl('/api/qr/init'), {
-        method: 'POST'
+        method: 'POST',
+        headers: {
+          'Accept': 'image/png',
+        },
+        credentials: 'include' // Include credentials for CORS
       })
 
       if (response.ok) {
-        const challengeIdFromHeader = response.headers.get('X-Challenge-Id')
+        // Get challenge ID from header
+        const challengeIdFromHeader = response.headers.get('X-Challenge-Id') || 
+                                     response.headers.get('x-challenge-id') || 
+                                     response.headers.get('challenge-id')
+        
         if (challengeIdFromHeader) {
           setChallengeId(challengeIdFromHeader)
           
-          // Generate QR code with challenge info
-          const qrCodeData = JSON.stringify({
-            challengeId: challengeIdFromHeader,
-            nonce: generateNonce()
-          })
-          
-          const qr = qrcode(0, 'M')
-          qr.addData(qrCodeData)
-          qr.make()
-          
-          // Convert to data URL for display
-          const qrDataUrl = qr.createDataURL(6)
+          // Convert PNG response to data URL
+          const blob = await response.blob()
+          const qrDataUrl = URL.createObjectURL(blob)
           setQrCodeDataUrl(qrDataUrl)
           
           setStatus('waiting')
           startListeningForUpdates(challengeIdFromHeader)
         } else {
-          throw new Error('No Challenge ID received')
+          throw new Error('No Challenge ID received in response headers')
         }
       } else {
         throw new Error('Failed to initialize QR login')
@@ -133,6 +132,10 @@ const DesktopLogin: React.FC<DesktopLoginProps> = ({ onLogin }) => {
     return () => {
       if (eventSourceRef.current) {
         eventSourceRef.current.close()
+      }
+      // Clean up blob URL to prevent memory leaks
+      if (qrCodeDataUrl && qrCodeDataUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(qrCodeDataUrl)
       }
     }
   }, [])
