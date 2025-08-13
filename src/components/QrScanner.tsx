@@ -38,11 +38,18 @@ const QrScanner: React.FC<QrScannerProps> = ({ onScanSuccess }) => {
       if (videoRef.current) {
         videoRef.current.srcObject = stream
         videoRef.current.setAttribute('playsinline', 'true') // For iOS
-        videoRef.current.play()
         
-        // Initialize ZXing code reader
-        codeReader.current = new BrowserMultiFormatReader()
-        startScanning()
+        // Wait for video to be ready before starting scanner
+        videoRef.current.onloadedmetadata = () => {
+          videoRef.current!.play().then(() => {
+            // Initialize ZXing code reader after video is playing
+            codeReader.current = new BrowserMultiFormatReader()
+            startScanning()
+          }).catch(err => {
+            console.error('Error playing video:', err)
+            setError('Failed to start camera preview')
+          })
+        }
       }
     } catch (err) {
       console.error('Error accessing camera:', err)
@@ -64,20 +71,30 @@ const QrScanner: React.FC<QrScannerProps> = ({ onScanSuccess }) => {
 
     // Start continuous scanning
     try {
-      codeReader.current.decodeFromVideoDevice(
-        null,
-        videoRef.current.id,
-        (result, error) => {
+      // Use decodeFromVideoElement for better mobile compatibility
+      const scanContinuously = async () => {
+        if (!codeReader.current || !videoRef.current) return
+        
+        try {
+          const result = await codeReader.current.decodeOnceFromVideoElement(videoRef.current)
           if (result) {
             handleScanResult(result.getText())
+            return
           }
-          if (error && !(error instanceof NotFoundException)) {
+        } catch (error) {
+          if (!(error instanceof NotFoundException)) {
             console.error('Scan error:', error)
           }
         }
-      )
+        
+        // Continue scanning
+        requestAnimationFrame(scanContinuously)
+      }
+      
+      scanContinuously()
     } catch (error) {
       console.error('Scanning error:', error)
+      setError('Failed to start scanner')
     }
   }
 
