@@ -11,6 +11,7 @@ const QrScanner: React.FC<QrScannerProps> = ({ onScanSuccess }) => {
   const [error, setError] = useState('')
   const [hasPermission, setHasPermission] = useState(false)
   const codeReader = useRef<BrowserMultiFormatReader | null>(null)
+  const animationFrameRef = useRef<number | null>(null)
 
   useEffect(() => {
     initializeScanner()
@@ -59,12 +60,13 @@ const QrScanner: React.FC<QrScannerProps> = ({ onScanSuccess }) => {
             console.log('Video playing successfully')
             
             // Initialize scanner after ensuring video is playing
+            // Use shorter delay for better UX
             setTimeout(() => {
               if (videoRef.current && videoRef.current.readyState >= 2) {
                 codeReader.current = new BrowserMultiFormatReader()
                 startScanning()
               }
-            }, 1000)
+            }, 500)
           } catch (err) {
             console.error('Error playing video:', err)
             // Try playing again on user interaction
@@ -116,7 +118,9 @@ const QrScanner: React.FC<QrScannerProps> = ({ onScanSuccess }) => {
         }
         
         // Continue scanning
-        requestAnimationFrame(scanContinuously)
+        if (isScanning) {
+          animationFrameRef.current = requestAnimationFrame(scanContinuously)
+        }
       }
       
       scanContinuously()
@@ -155,14 +159,29 @@ const QrScanner: React.FC<QrScannerProps> = ({ onScanSuccess }) => {
   const stopScanner = () => {
     setIsScanning(false)
     
-    if (codeReader.current) {
-      codeReader.current.reset()
+    // Cancel animation frame
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current)
+      animationFrameRef.current = null
     }
     
+    // Reset code reader
+    if (codeReader.current) {
+      try {
+        codeReader.current.reset()
+      } catch (error) {
+        console.error('Error resetting code reader:', error)
+      }
+      codeReader.current = null
+    }
+    
+    // Stop all video tracks
     if (videoRef.current && videoRef.current.srcObject) {
       const stream = videoRef.current.srcObject as MediaStream
       const tracks = stream.getTracks()
-      tracks.forEach(track => track.stop())
+      tracks.forEach(track => {
+        track.stop()
+      })
       videoRef.current.srcObject = null
     }
   }

@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { getApiUrl } from '../config/api'
+import authService from '../services/authService'
+import { showToast } from './Toast'
 
 interface DesktopLoginProps {
   onLogin: (token: string) => void
@@ -87,7 +89,8 @@ const DesktopLogin: React.FC<DesktopLoginProps> = ({ onLogin }) => {
 
           if (tokenResponse.ok) {
             const tokens = await tokenResponse.json()
-            localStorage.setItem('refreshToken', tokens.refreshToken)
+            authService.storeTokens(tokens)
+            showToast('Successfully logged in!', 'success')
             onLogin(tokens.accessToken)
           } else {
             throw new Error('Failed to exchange OTC for tokens')

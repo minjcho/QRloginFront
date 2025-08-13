@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import DesktopLogin from './components/DesktopLogin'
 import MobileLogin from './components/MobileLogin'
+import { ToastContainer } from './components/Toast'
 import './App.css'
 
 function App() {
@@ -51,6 +52,7 @@ function App() {
 
   return (
     <div className="app">
+      <ToastContainer />
       <header className="app-header">
         <h1>QR Login System</h1>
         <p>Secure authentication with QR codes</p>

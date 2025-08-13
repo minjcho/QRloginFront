@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import QrScanner from './QrScanner'
 import { getApiUrl } from '../config/api'
+import { showToast } from './Toast'
+import authService from '../services/authService'
 
 interface MobileLoginProps {
-  onLogin: (token: string) => void
+  onLogin?: (token: string) => void
 }
 
 interface LoginFormData {
@@ -11,7 +13,7 @@ interface LoginFormData {
   password: string
 }
 
-const MobileLogin: React.FC<MobileLoginProps> = () => {
+const MobileLogin: React.FC<MobileLoginProps> = ({ onLogin }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [userToken, setUserToken] = useState('')
   const [loginForm, setLoginForm] = useState<LoginFormData>({ email: '', password: '' })
@@ -45,9 +47,12 @@ const MobileLogin: React.FC<MobileLoginProps> = () => {
       if (response.ok) {
         const data = await response.json()
         setUserToken(data.accessToken)
-        localStorage.setItem('accessToken', data.accessToken)
-        localStorage.setItem('refreshToken', data.refreshToken)
+        authService.storeTokens(data)
         setIsAuthenticated(true)
+        showToast('Successfully logged in!', 'success')
+        if (onLogin) {
+          onLogin(data.accessToken)
+        }
       } else {
         const errorData = await response.json()
         setLoginError(errorData.message || 'Login failed')
@@ -78,8 +83,11 @@ const MobileLogin: React.FC<MobileLoginProps> = () => {
       })
 
       if (response.status === 201) {
+        showToast('Account created successfully! Logging in...', 'success')
         // Auto-login after successful signup
-        handleLogin(new Event('submit') as any)
+        const loginEvent = new Event('submit') as any
+        loginEvent.preventDefault = () => {}
+        await handleLogin(loginEvent)
       } else {
         const errorData = await response.json()
         setLoginError(errorData.error || 'Signup failed')
@@ -107,22 +115,22 @@ const MobileLogin: React.FC<MobileLoginProps> = () => {
 
       if (response.ok) {
         await response.json()
-        alert('✅ Desktop login approved successfully!')
+        showToast('Desktop login approved successfully!', 'success')
         setShowScanner(false)
       } else {
         const errorData = await response.json()
-        alert(`❌ Failed to approve login: ${errorData.message}`)
+        showToast(`Failed to approve login: ${errorData.message}`, 'error')
       }
     } catch (error) {
-      alert('❌ Error approving login. Please try again.')
+      showToast('Error approving login. Please try again.', 'error')
     }
   }
 
   const handleLogout = () => {
-    localStorage.removeItem('accessToken')
-    localStorage.removeItem('refreshToken')
+    authService.logout()
     setIsAuthenticated(false)
     setUserToken('')
+    showToast('Successfully logged out', 'info')
   }
 
   if (!isAuthenticated) {
