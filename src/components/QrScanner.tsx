@@ -104,7 +104,7 @@ const QrScanner: React.FC<QrScannerProps> = ({ onScanSuccess }) => {
         if (!codeReader.current || !videoRef.current) return
         
         try {
-          const result = await codeReader.current.decodeOnceFromVideoElement(videoRef.current)
+          const result = await codeReader.current.decodeFromVideoElement(videoRef.current)
           if (result) {
             handleScanResult(result.getText())
             return
