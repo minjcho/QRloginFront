@@ -27,28 +27,56 @@ const QrScanner: React.FC<QrScannerProps> = ({ onScanSuccess }) => {
       }
       
       // Request camera permission
-      const stream = await navigator.mediaDevices.getUserMedia({
+      const constraints = {
         video: {
-          facingMode: 'environment' // Use back camera if available
+          facingMode: { ideal: 'environment' }, // Use back camera if available
+          width: { min: 640, ideal: 1280, max: 1920 },
+          height: { min: 480, ideal: 720, max: 1080 }
         }
-      })
+      }
+      
+      const stream = await navigator.mediaDevices.getUserMedia(constraints)
       
       setHasPermission(true)
       
       if (videoRef.current) {
+        // Store stream reference for cleanup
         videoRef.current.srcObject = stream
-        videoRef.current.setAttribute('playsinline', 'true') // For iOS
         
-        // Wait for video to be ready before starting scanner
-        videoRef.current.onloadedmetadata = () => {
-          videoRef.current!.play().then(() => {
-            // Initialize ZXing code reader after video is playing
-            codeReader.current = new BrowserMultiFormatReader()
-            startScanning()
-          }).catch(err => {
+        // Ensure video plays inline on mobile devices
+        videoRef.current.setAttribute('playsinline', 'playsinline')
+        videoRef.current.setAttribute('webkit-playsinline', 'webkit-playsinline')
+        videoRef.current.setAttribute('autoplay', 'autoplay')
+        videoRef.current.setAttribute('muted', 'muted')
+        
+        // For iOS Safari
+        videoRef.current.disablePictureInPicture = true
+        
+        // Wait for video to be ready
+        const playVideo = async () => {
+          try {
+            await videoRef.current!.play()
+            console.log('Video playing successfully')
+            
+            // Initialize scanner after ensuring video is playing
+            setTimeout(() => {
+              if (videoRef.current && videoRef.current.readyState >= 2) {
+                codeReader.current = new BrowserMultiFormatReader()
+                startScanning()
+              }
+            }, 1000)
+          } catch (err) {
             console.error('Error playing video:', err)
-            setError('Failed to start camera preview')
-          })
+            // Try playing again on user interaction
+            setError('Tap to start camera preview')
+          }
+        }
+        
+        // Handle different loading states
+        if (videoRef.current.readyState >= 2) {
+          await playVideo()
+        } else {
+          videoRef.current.onloadedmetadata = playVideo
         }
       }
     } catch (err) {
@@ -168,6 +196,13 @@ const QrScanner: React.FC<QrScannerProps> = ({ onScanSuccess }) => {
           className="scanner-video"
           playsInline
           muted
+          autoPlay
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            backgroundColor: '#000'
+          }}
         />
         
         <div className="scanner-overlay">
