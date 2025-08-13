@@ -13,7 +13,7 @@ interface LoginFormData {
   password: string
 }
 
-const MobileLogin: React.FC<MobileLoginProps> = ({ onLogin }) => {
+const MobileLogin: React.FC<MobileLoginProps> = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [userToken, setUserToken] = useState('')
   const [loginForm, setLoginForm] = useState<LoginFormData>({ email: '', password: '' })
@@ -50,9 +50,6 @@ const MobileLogin: React.FC<MobileLoginProps> = ({ onLogin }) => {
         authService.storeTokens(data)
         setIsAuthenticated(true)
         showToast('Successfully logged in!', 'success')
-        if (onLogin) {
-          onLogin(data.accessToken)
-        }
       } else {
         const errorData = await response.json()
         setLoginError(errorData.message || 'Login failed')

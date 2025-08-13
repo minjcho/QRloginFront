@@ -6,7 +6,7 @@ import './App.css'
 
 function App() {
   const [isMobile, setIsMobile] = useState(false)
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [isDesktopAuthenticated, setIsDesktopAuthenticated] = useState(false)
 
   useEffect(() => {
     // Detect mobile device
@@ -17,32 +17,28 @@ function App() {
     }
     
     setIsMobile(checkIfMobile())
-    
-    // Check if already authenticated
-    const token = localStorage.getItem('accessToken')
-    if (token) {
-      setIsAuthenticated(true)
-    }
   }, [])
 
-  const handleLogin = (token: string) => {
-    localStorage.setItem('accessToken', token)
-    setIsAuthenticated(true)
+  const handleDesktopLogin = (token: string) => {
+    localStorage.setItem('desktopAccessToken', token)
+    setIsDesktopAuthenticated(true)
   }
 
-  const handleLogout = () => {
-    localStorage.removeItem('accessToken')
-    localStorage.removeItem('refreshToken')
-    setIsAuthenticated(false)
+  const handleDesktopLogout = () => {
+    localStorage.removeItem('desktopAccessToken')
+    localStorage.removeItem('desktopRefreshToken')
+    setIsDesktopAuthenticated(false)
   }
 
-  if (isAuthenticated) {
+  // Only show success screen for desktop authentication
+  if (!isMobile && isDesktopAuthenticated) {
     return (
       <div className="app">
+        <ToastContainer />
         <div className="auth-success">
           <h1>🎉 Login Successful!</h1>
           <p>You are now authenticated via QR Login System</p>
-          <button onClick={handleLogout} className="logout-btn">
+          <button onClick={handleDesktopLogout} className="logout-btn">
             Logout
           </button>
         </div>
@@ -59,9 +55,9 @@ function App() {
       </header>
       
       {isMobile ? (
-        <MobileLogin onLogin={handleLogin} />
+        <MobileLogin />
       ) : (
-        <DesktopLogin onLogin={handleLogin} />
+        <DesktopLogin onLogin={handleDesktopLogin} />
       )}
       
       <footer className="app-footer">
