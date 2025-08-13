@@ -1,5 +1,5 @@
 // API 설정
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8090';
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://minjcho.site';
 
 // API 엔드포인트 생성 함수
 export const getApiUrl = (endpoint: string): string => {

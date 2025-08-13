@@ -10,7 +10,7 @@ export default defineConfig({
     // Proxy는 개발 환경에서만 사용
     proxy: process.env.NODE_ENV === 'development' ? {
       '/api': {
-        target: 'http://localhost:8090',
+        target: 'https://minjcho.site',
         changeOrigin: true,
         secure: false
       }
