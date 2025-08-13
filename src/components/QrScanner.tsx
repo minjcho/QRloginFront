@@ -63,28 +63,22 @@ const QrScanner: React.FC<QrScannerProps> = ({ onScanSuccess }) => {
     setError('')
 
     // Start continuous scanning
-    const scanFrame = () => {
-      if (!codeReader.current || !videoRef.current || !isScanning) return
-
-      try {
-        codeReader.current.decodeFromVideoDevice(
-          null,
-          videoRef.current.id,
-          (result, error) => {
-            if (result) {
-              handleScanResult(result.getText())
-            }
-            if (error && !(error instanceof NotFoundException)) {
-              console.error('Scan error:', error)
-            }
+    try {
+      codeReader.current.decodeFromVideoDevice(
+        null,
+        videoRef.current.id,
+        (result, error) => {
+          if (result) {
+            handleScanResult(result.getText())
           }
-        )
-      } catch (error) {
-        console.error('Scanning error:', error)
-      }
+          if (error && !(error instanceof NotFoundException)) {
+            console.error('Scan error:', error)
+          }
+        }
+      )
+    } catch (error) {
+      console.error('Scanning error:', error)
     }
-
-    scanFrame()
   }
 
   const handleScanResult = (text: string) => {
