@@ -3,25 +3,76 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #6b73ff 0%, #000dff 100%);
 }
 
 .app-header {
   text-align: center;
   padding: 2rem 1rem;
   color: white;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
 }
 
 .app-header h1 {
-  font-size: 2.5rem;
+  font-size: 2.2rem;
   margin-bottom: 0.5rem;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  font-weight: 600;
+  letter-spacing: -0.5px;
 }
 
 .app-header p {
-  font-size: 1.1rem;
-  opacity: 0.9;
+  font-size: 1rem;
+  opacity: 0.95;
   margin: 0;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+/* Navigation Menu */
+.nav-menu {
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.nav-link {
+  color: white;
+  text-decoration: none;
+  padding: 0.75rem 1.5rem;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.nav-link:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.nav-menu .logout-btn {
+  background: rgba(255, 67, 87, 0.9);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin: 0;
+}
+
+.nav-menu .logout-btn:hover {
+  background: rgba(255, 55, 66, 1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .app-footer {

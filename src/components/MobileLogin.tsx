@@ -6,6 +6,7 @@ import authService from '../services/authService'
 
 interface MobileLoginProps {
   onLogin?: (token: string) => void
+  onAuthChange?: (isAuthenticated: boolean) => void
 }
 
 interface LoginFormData {
@@ -13,7 +14,7 @@ interface LoginFormData {
   password: string
 }
 
-const MobileLogin: React.FC<MobileLoginProps> = () => {
+const MobileLogin: React.FC<MobileLoginProps> = ({ onAuthChange }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [userToken, setUserToken] = useState('')
   const [loginForm, setLoginForm] = useState<LoginFormData>({ email: '', password: '' })
@@ -27,6 +28,7 @@ const MobileLogin: React.FC<MobileLoginProps> = () => {
     if (token) {
       setUserToken(token)
       setIsAuthenticated(true)
+      onAuthChange?.(true)
     }
   }, [])
 
@@ -49,6 +51,7 @@ const MobileLogin: React.FC<MobileLoginProps> = () => {
         setUserToken(data.accessToken)
         authService.storeTokens(data)
         setIsAuthenticated(true)
+        onAuthChange?.(true)
         showToast('Successfully logged in!', 'success')
       } else {
         const errorData = await response.json()
@@ -127,6 +130,7 @@ const MobileLogin: React.FC<MobileLoginProps> = () => {
     authService.logout()
     setIsAuthenticated(false)
     setUserToken('')
+    onAuthChange?.(false)
     showToast('Successfully logged out', 'info')
   }
 
