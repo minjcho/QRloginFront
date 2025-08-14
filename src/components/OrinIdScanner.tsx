@@ -34,18 +34,19 @@ const OrinIdScanner: React.FC<OrinIdScannerProps> = ({ onScanSuccess, onClose })
     
     // Check if it's a numeric timestamp (13 digits)
     if (/^\d{13}$/.test(cleanText)) {
-      // Convert timestamp to OrinId format
-      return `orin-${cleanText}`
+      // Return the numeric ID as is
+      return cleanText
     }
     
     // Check if it already has orin prefix
     if (cleanText.toLowerCase().startsWith('orin')) {
-      // Normalize the format (ensure it has hyphen)
+      // Return without the 'orin' prefix
       const idPart = cleanText.substring(4)
+      // Remove hyphen if it starts with one
       if (idPart.startsWith('-')) {
-        return cleanText.toLowerCase()
+        return idPart.substring(1)
       } else {
-        return `orin-${idPart}`.toLowerCase()
+        return idPart
       }
     }
     
