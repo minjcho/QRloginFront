@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react'
-import { BrowserMultiFormatReader, DecodeHintType, BarcodeFormat } from '@zxing/library'
+import { BrowserMultiFormatReader } from '@zxing/library'
 import './OrinIdScanner.css'
 
 interface OrinIdScannerProps {
@@ -13,7 +13,6 @@ const OrinIdScanner: React.FC<OrinIdScannerProps> = ({ onScanSuccess, onClose })
   const [error, setError] = useState<string>('')
   const [hasPermission, setHasPermission] = useState<boolean | null>(null)
   const codeReaderRef = useRef<BrowserMultiFormatReader | null>(null)
-  const streamRef = useRef<MediaStream | null>(null)
 
   useEffect(() => {
     if (hasPermission === true) {
@@ -26,21 +25,7 @@ const OrinIdScanner: React.FC<OrinIdScannerProps> = ({ onScanSuccess, onClose })
   }, [hasPermission])
 
   const requestCameraPermission = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { 
-          facingMode: 'environment',
-          width: { ideal: 1280 },
-          height: { ideal: 720 }
-        } 
-      })
-      streamRef.current = stream
-      setHasPermission(true)
-    } catch (err) {
-      console.error('Camera permission denied:', err)
-      setError('Camera permission denied. Please allow camera access.')
-      setHasPermission(false)
-    }
+    setHasPermission(true)
   }
 
   const parseOrinId = (text: string): string | null => {
@@ -73,34 +58,39 @@ const OrinIdScanner: React.FC<OrinIdScannerProps> = ({ onScanSuccess, onClose })
   }
 
   const startScanning = async () => {
-    if (!videoRef.current || !streamRef.current) return
+    let mounted = true
 
     try {
+      console.log('Starting OrinId scanner...')
       setIsScanning(true)
       setError('')
 
-      // Set up video element
-      videoRef.current.srcObject = streamRef.current
-      await videoRef.current.play()
-
-      // Initialize code reader with QR and other 2D barcode formats
-      const hints = new Map()
-      hints.set(DecodeHintType.POSSIBLE_FORMATS, [
-        BarcodeFormat.QR_CODE,
-        BarcodeFormat.DATA_MATRIX,
-        BarcodeFormat.AZTEC,
-        BarcodeFormat.PDF_417
-      ])
-      
-      const codeReader = new BrowserMultiFormatReader(hints)
+      // Create code reader
+      const codeReader = new BrowserMultiFormatReader()
       codeReaderRef.current = codeReader
 
-      // Start continuous scanning
-      const scanningLoop = () => {
-        if (!isScanning || !videoRef.current) return
-        
-        codeReader.decodeFromVideoElement(videoRef.current)
-          .then((result) => {
+      // Get available devices
+      const videoInputDevices = await codeReader.listVideoInputDevices()
+      console.log('Available cameras:', videoInputDevices)
+
+      if (videoInputDevices.length === 0) {
+        throw new Error('No camera found')
+      }
+
+      // Use back camera if available, otherwise use first camera
+      const selectedDeviceId = videoInputDevices.find(device => 
+        device.label.toLowerCase().includes('back') || 
+        device.label.toLowerCase().includes('rear')
+      )?.deviceId || videoInputDevices[0].deviceId
+
+      console.log('Using camera:', selectedDeviceId)
+
+      // Start decoding from video device
+      if (mounted && videoRef.current) {
+        await codeReader.decodeFromVideoDevice(
+          selectedDeviceId,
+          videoRef.current,
+          (result, err) => {
             if (result) {
               const text = result.getText()
               console.log('QR Code scanned:', text)
@@ -110,30 +100,33 @@ const OrinIdScanner: React.FC<OrinIdScannerProps> = ({ onScanSuccess, onClose })
                 handleSuccessfulScan(parsedOrinId)
               } else {
                 setError('Invalid OrinId format in QR code')
-                // Continue scanning after showing error
-                setTimeout(() => {
-                  setError('')
-                  requestAnimationFrame(scanningLoop)
-                }, 3000)
+                // Clear error after 3 seconds
+                setTimeout(() => setError(''), 3000)
               }
             }
-          })
-          .catch((err) => {
-            if (err?.message !== 'NotFoundException') {
-              console.error('Scanning error:', err)
+            
+            if (err && !(err.message?.includes('NotFoundException'))) {
+              console.error('Decode error:', err)
             }
-            // Continue scanning
-            if (isScanning) {
-              requestAnimationFrame(scanningLoop)
-            }
-          })
+          }
+        )
       }
-      
-      scanningLoop()
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed to start scanning:', err)
-      setError('Failed to start camera. Please try again.')
+      
+      if (err.name === 'NotAllowedError') {
+        setError('Camera permission denied. Please allow camera access.')
+        setHasPermission(false)
+      } else if (err.message?.includes('No camera')) {
+        setError('No camera found on this device.')
+      } else {
+        setError('Failed to access camera. Please try again.')
+      }
       setIsScanning(false)
+    }
+
+    return () => {
+      mounted = false
     }
   }
 
@@ -148,19 +141,9 @@ const OrinIdScanner: React.FC<OrinIdScannerProps> = ({ onScanSuccess, onClose })
   const stopScanning = () => {
     // Stop the code reader
     if (codeReaderRef.current) {
+      console.log('Stopping scanner...')
       codeReaderRef.current.reset()
       codeReaderRef.current = null
-    }
-
-    // Stop video stream
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop())
-      streamRef.current = null
-    }
-
-    // Clear video element
-    if (videoRef.current) {
-      videoRef.current.srcObject = null
     }
 
     setIsScanning(false)
@@ -255,21 +238,28 @@ const OrinIdScanner: React.FC<OrinIdScannerProps> = ({ onScanSuccess, onClose })
             muted
           />
           
-          <div className="scanner-overlay">
-            <div className="scanner-frame">
-              <div className="corner top-left"></div>
-              <div className="corner top-right"></div>
-              <div className="corner bottom-left"></div>
-              <div className="corner bottom-right"></div>
-            </div>
-          </div>
-          
           {isScanning && (
-            <div className="scanner-status">
-              <div className="scanning-indicator">
-                <span className="pulse-dot"></span>
-                <span>Scanning...</span>
+            <div className="scanner-overlay">
+              <div className="scanner-frame">
+                <div className="corner top-left"></div>
+                <div className="corner top-right"></div>
+                <div className="corner bottom-left"></div>
+                <div className="corner bottom-right"></div>
               </div>
+              
+              <div className="scanner-status">
+                <div className="scanning-indicator">
+                  <span className="pulse-dot"></span>
+                  <span>Scanning...</span>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {!isScanning && !error && (
+            <div className="loading-overlay-scanner">
+              <div className="spinner"></div>
+              <p>Starting camera...</p>
             </div>
           )}
         </div>
