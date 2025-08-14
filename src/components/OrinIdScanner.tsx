@@ -96,28 +96,40 @@ const OrinIdScanner: React.FC<OrinIdScannerProps> = ({ onScanSuccess, onClose })
       codeReaderRef.current = codeReader
 
       // Start continuous scanning
-      codeReader.decodeFromVideoElement(
-        videoRef.current,
-        (result, error) => {
-          if (result) {
-            const text = result.getText()
-            console.log('QR Code scanned:', text)
-            
-            const parsedOrinId = parseOrinId(text)
-            if (parsedOrinId) {
-              handleSuccessfulScan(parsedOrinId)
-            } else {
-              setError('Invalid OrinId format in QR code')
-              // Continue scanning after showing error
-              setTimeout(() => setError(''), 3000)
+      const scanningLoop = () => {
+        if (!isScanning || !videoRef.current) return
+        
+        codeReader.decodeFromVideoElement(videoRef.current)
+          .then((result) => {
+            if (result) {
+              const text = result.getText()
+              console.log('QR Code scanned:', text)
+              
+              const parsedOrinId = parseOrinId(text)
+              if (parsedOrinId) {
+                handleSuccessfulScan(parsedOrinId)
+              } else {
+                setError('Invalid OrinId format in QR code')
+                // Continue scanning after showing error
+                setTimeout(() => {
+                  setError('')
+                  requestAnimationFrame(scanningLoop)
+                }, 3000)
+              }
             }
-          }
-          
-          if (error && error.message !== 'NotFoundException') {
-            console.error('Scanning error:', error)
-          }
-        }
-      )
+          })
+          .catch((err) => {
+            if (err?.message !== 'NotFoundException') {
+              console.error('Scanning error:', err)
+            }
+            // Continue scanning
+            if (isScanning) {
+              requestAnimationFrame(scanningLoop)
+            }
+          })
+      }
+      
+      scanningLoop()
     } catch (err) {
       console.error('Failed to start scanning:', err)
       setError('Failed to start camera. Please try again.')
