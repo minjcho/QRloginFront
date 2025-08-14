@@ -301,6 +301,31 @@
   background: #5a6268;
 }
 
+/* Scanner Section */
+.scanner-section {
+  text-align: center;
+}
+
+.scanner-alternative {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #e9ecef;
+}
+
+.btn-outline {
+  background: transparent;
+  color: #6c757d;
+  border: 2px solid #dee2e6;
+}
+
+.btn-outline:hover:not(:disabled) {
+  background: #f8f9fa;
+  border-color: #6c757d;
+}
+
 /* Search Container */
 .search-container {
   animation: fadeIn 0.3s ease;

@@ -1,0 +1,240 @@
+/* Success Popup Overlay */
+.success-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 3000;
+  animation: fadeIn 0.3s ease;
+}
+
+/* Success Popup Container */
+.success-popup {
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: scaleIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Success Animation */
+.success-animation {
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: center;
+}
+
+.success-circle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4caf50, #45a049);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: pulseGrow 0.6s ease-out;
+  box-shadow: 0 4px 20px rgba(76, 175, 80, 0.4);
+}
+
+.success-checkmark {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  animation: checkmarkAnimation 0.8s ease-out 0.3s both;
+}
+
+.checkmark-stem {
+  position: absolute;
+  width: 3px;
+  height: 28px;
+  background: white;
+  left: 23px;
+  top: 6px;
+  transform: rotate(45deg);
+  animation: stemAnimation 0.4s ease-out 0.4s both;
+  transform-origin: bottom;
+}
+
+.checkmark-kick {
+  position: absolute;
+  width: 3px;
+  height: 14px;
+  background: white;
+  left: 10px;
+  top: 20px;
+  transform: rotate(-45deg);
+  animation: kickAnimation 0.3s ease-out 0.6s both;
+  transform-origin: bottom;
+}
+
+/* Success Title */
+.success-title {
+  font-size: 28px;
+  color: #2c3e50;
+  margin: 0 0 12px 0;
+  font-weight: 600;
+  animation: slideUp 0.5s ease-out 0.4s both;
+}
+
+/* Success Message */
+.success-message {
+  font-size: 16px;
+  color: #5a6c7d;
+  margin: 0 0 24px 0;
+  line-height: 1.5;
+  animation: slideUp 0.5s ease-out 0.5s both;
+}
+
+/* Progress Bar */
+.success-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: #e0e0e0;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #4caf50, #45a049);
+  animation: progressAnimation 3000ms linear;
+  transform-origin: left;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulseGrow {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes checkmarkAnimation {
+  from {
+    opacity: 0;
+    transform: scale(0) rotate(45deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes stemAnimation {
+  from {
+    height: 0;
+    opacity: 0;
+  }
+  to {
+    height: 28px;
+    opacity: 1;
+  }
+}
+
+@keyframes kickAnimation {
+  from {
+    height: 0;
+    opacity: 0;
+  }
+  to {
+    height: 14px;
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes progressAnimation {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+/* Mobile Responsive */
+@media (max-width: 480px) {
+  .success-popup {
+    padding: 32px 24px;
+    max-width: 90%;
+  }
+
+  .success-circle {
+    width: 70px;
+    height: 70px;
+  }
+
+  .success-checkmark {
+    width: 35px;
+    height: 35px;
+  }
+
+  .checkmark-stem {
+    height: 24px;
+    left: 20px;
+    top: 5px;
+  }
+
+  .checkmark-kick {
+    height: 12px;
+    left: 9px;
+    top: 17px;
+  }
+
+  .success-title {
+    font-size: 24px;
+  }
+
+  .success-message {
+    font-size: 14px;
+  }
+}

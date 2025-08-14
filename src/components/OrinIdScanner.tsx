@@ -7,26 +7,19 @@ interface OrinIdScannerProps {
   onClose: () => void
 }
 
-const OrinIdScanner: React.FC<OrinIdScannerProps> = ({ onScanSuccess, onClose }) => {
+const OrinIdScanner: React.FC<OrinIdScannerProps> = ({ onScanSuccess }) => {
   const videoRef = useRef<HTMLVideoElement>(null)
   const [isScanning, setIsScanning] = useState(false)
   const [error, setError] = useState<string>('')
-  const [hasPermission, setHasPermission] = useState<boolean | null>(null)
   const codeReaderRef = useRef<BrowserMultiFormatReader | null>(null)
 
   useEffect(() => {
-    if (hasPermission === true) {
-      startScanning()
-    }
+    startScanning()
 
     return () => {
       stopScanning()
     }
-  }, [hasPermission])
-
-  const requestCameraPermission = async () => {
-    setHasPermission(true)
-  }
+  }, [])
 
   const parseOrinId = (text: string): string | null => {
     // Remove any whitespace
@@ -117,7 +110,6 @@ const OrinIdScanner: React.FC<OrinIdScannerProps> = ({ onScanSuccess, onClose })
       
       if (err.name === 'NotAllowedError') {
         setError('Camera permission denied. Please allow camera access.')
-        setHasPermission(false)
       } else if (err.message?.includes('No camera')) {
         setError('No camera found on this device.')
       } else {
@@ -150,142 +142,53 @@ const OrinIdScanner: React.FC<OrinIdScannerProps> = ({ onScanSuccess, onClose })
     setIsScanning(false)
   }
 
-  const handleManualInput = () => {
-    const input = prompt('Enter OrinId manually:')
-    if (input) {
-      const parsedOrinId = parseOrinId(input)
-      if (parsedOrinId) {
-        handleSuccessfulScan(parsedOrinId)
-      } else {
-        setError('Invalid OrinId format')
-      }
-    }
-  }
-
-  if (hasPermission === null) {
-    return (
-      <div className="orin-scanner-modal">
-        <div className="orin-scanner-container">
-          <div className="scanner-header">
-            <h3>Scan OrinId QR Code</h3>
-            <button className="close-btn" onClick={onClose}>✕</button>
-          </div>
-          
-          <div className="permission-prompt">
-            <div className="camera-icon">📷</div>
-            <h4>Camera Permission Required</h4>
-            <p>We need access to your camera to scan QR codes</p>
-            <p className="format-info">
-              Supported formats: 
-              <br />• Numeric (e.g., 1420524217000)
-              <br />• OrinId (e.g., orin12345)
-            </p>
-            <button 
-              className="permission-btn"
-              onClick={requestCameraPermission}
-            >
-              Allow Camera Access
-            </button>
-            <button 
-              className="manual-input-btn"
-              onClick={handleManualInput}
-            >
-              Enter Manually
-            </button>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  if (hasPermission === false) {
-    return (
-      <div className="orin-scanner-modal">
-        <div className="orin-scanner-container">
-          <div className="scanner-header">
-            <h3>Scan OrinId QR Code</h3>
-            <button className="close-btn" onClick={onClose}>✕</button>
-          </div>
-          
-          <div className="permission-denied">
-            <div className="error-icon">⚠️</div>
-            <h4>Camera Access Denied</h4>
-            <p>Please enable camera permissions in your browser settings</p>
-            <button 
-              className="manual-input-btn"
-              onClick={handleManualInput}
-            >
-              Enter OrinId Manually
-            </button>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
   return (
-    <div className="orin-scanner-modal">
-      <div className="orin-scanner-container">
-        <div className="scanner-header">
-          <h3>Scan OrinId QR Code</h3>
-          <button className="close-btn" onClick={onClose}>✕</button>
-        </div>
+    <div className="inline-scanner-container">
+      <div className="scanner-viewport-inline">
+        <video 
+          ref={videoRef}
+          className="scanner-video"
+          playsInline
+          muted
+        />
         
-        <div className="scanner-viewport">
-          <video 
-            ref={videoRef}
-            className="scanner-video"
-            playsInline
-            muted
-          />
-          
-          {isScanning && (
-            <div className="scanner-overlay">
-              <div className="scanner-frame">
-                <div className="corner top-left"></div>
-                <div className="corner top-right"></div>
-                <div className="corner bottom-left"></div>
-                <div className="corner bottom-right"></div>
-              </div>
-              
-              <div className="scanner-status">
-                <div className="scanning-indicator">
-                  <span className="pulse-dot"></span>
-                  <span>Scanning...</span>
-                </div>
+        {isScanning && (
+          <div className="scanner-overlay">
+            <div className="scanner-frame">
+              <div className="corner top-left"></div>
+              <div className="corner top-right"></div>
+              <div className="corner bottom-left"></div>
+              <div className="corner bottom-right"></div>
+            </div>
+            
+            <div className="scanner-status">
+              <div className="scanning-indicator">
+                <span className="pulse-dot"></span>
+                <span>QR 코드를 스캔하세요</span>
               </div>
             </div>
-          )}
-          
-          {!isScanning && !error && (
-            <div className="loading-overlay-scanner">
-              <div className="spinner"></div>
-              <p>Starting camera...</p>
-            </div>
-          )}
-        </div>
-        
-        {error && (
-          <div className="scanner-error">
-            <p>{error}</p>
           </div>
         )}
         
-        <div className="scanner-instructions">
-          <p>Point your camera at the QR code</p>
-          <p className="format-hint">
-            Accepts: Numeric IDs (13 digits) or OrinId format
-          </p>
-        </div>
+        {!isScanning && !error && (
+          <div className="loading-overlay-scanner">
+            <div className="spinner"></div>
+            <p>카메라 시작 중...</p>
+          </div>
+        )}
         
-        <div className="scanner-actions">
-          <button 
-            className="manual-input-btn secondary"
-            onClick={handleManualInput}
-          >
-            Enter Manually
-          </button>
-        </div>
+        {error && (
+          <div className="scanner-error-overlay">
+            <p>📷 {error}</p>
+          </div>
+        )}
+      </div>
+      
+      <div className="scanner-instructions-inline">
+        <p>QR 코드를 카메라에 비춰주세요</p>
+        <p className="format-hint">
+          지원 형식: 13자리 숫자 또는 영문/숫자 조합
+        </p>
       </div>
     </div>
   )

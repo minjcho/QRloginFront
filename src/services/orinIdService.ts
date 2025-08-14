@@ -55,7 +55,7 @@ class OrinIdService {
     if (!response.ok) {
       if (response.status === 400) {
         const error = await response.json()
-        throw new Error(error.message || '잘못된 요청이거나 이미 사용 중인 OrinId입니다')
+        throw new Error(error.message || '잘못된 요청입니다')
       }
       if (response.status === 401) {
         throw new Error('인증이 필요합니다')
