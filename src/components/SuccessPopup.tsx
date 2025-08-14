@@ -27,7 +27,7 @@ const SuccessPopup: React.FC<SuccessPopupProps> = ({ message, onClose, duration 
             </div>
           </div>
         </div>
-        <h2 className="success-title">Success!</h2>
+        <h2 className="success-title">성공!</h2>
         <p className="success-message">{message}</p>
         <div className="success-progress">
           <div className="progress-bar" style={{ animationDuration: `${duration}ms` }}></div>

@@ -93,7 +93,7 @@ const OrinIdScanner: React.FC<OrinIdScannerProps> = ({ onScanSuccess }) => {
               if (parsedOrinId) {
                 handleSuccessfulScan(parsedOrinId)
               } else {
-                setError('Invalid OrinId format in QR code')
+                setError('QR 코드의 OrinId 형식이 잘못되었습니다')
                 // Clear error after 3 seconds
                 setTimeout(() => setError(''), 3000)
               }
@@ -109,11 +109,11 @@ const OrinIdScanner: React.FC<OrinIdScannerProps> = ({ onScanSuccess }) => {
       console.error('Failed to start scanning:', err)
       
       if (err.name === 'NotAllowedError') {
-        setError('Camera permission denied. Please allow camera access.')
+        setError('카메라 권한이 거부되었습니다. 카메라 접근을 허용해주세요.')
       } else if (err.message?.includes('No camera')) {
-        setError('No camera found on this device.')
+        setError('이 기기에서 카메라를 찾을 수 없습니다.')
       } else {
-        setError('Failed to access camera. Please try again.')
+        setError('카메라 접근 실패. 다시 시도해주세요.')
       }
       setIsScanning(false)
     }
@@ -164,7 +164,7 @@ const OrinIdScanner: React.FC<OrinIdScannerProps> = ({ onScanSuccess }) => {
             <div className="scanner-status">
               <div className="scanning-indicator">
                 <span className="pulse-dot"></span>
-                <span>QR 코드를 스캔하세요</span>
+                <span>QR 코드를 인식 중...</span>
               </div>
             </div>
           </div>
@@ -185,9 +185,9 @@ const OrinIdScanner: React.FC<OrinIdScannerProps> = ({ onScanSuccess }) => {
       </div>
       
       <div className="scanner-instructions-inline">
-        <p>QR 코드를 카메라에 비춰주세요</p>
+        <p>QR 코드를 프레임 안에 맞춰주세요</p>
         <p className="format-hint">
-          지원 형식: 13자리 숫자 또는 영문/숫자 조합
+          OrinId 형식을 자동으로 인식합니다
         </p>
       </div>
     </div>

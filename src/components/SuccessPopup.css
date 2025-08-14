@@ -38,12 +38,12 @@
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #4caf50, #45a049);
+  background: linear-gradient(135deg, #667eea, #764ba2);
   display: flex;
   justify-content: center;
   align-items: center;
   animation: pulseGrow 0.6s ease-out;
-  box-shadow: 0 4px 20px rgba(76, 175, 80, 0.4);
+  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
 }
 
 .success-checkmark {
@@ -108,7 +108,7 @@
 
 .progress-bar {
   height: 100%;
-  background: linear-gradient(90deg, #4caf50, #45a049);
+  background: linear-gradient(90deg, #667eea, #764ba2);
   animation: progressAnimation 3000ms linear;
   transform-origin: left;
 }

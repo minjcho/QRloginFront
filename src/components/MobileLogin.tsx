@@ -52,13 +52,13 @@ const MobileLogin: React.FC<MobileLoginProps> = ({ onAuthChange }) => {
         authService.storeTokens(data)
         setIsAuthenticated(true)
         onAuthChange?.(true)
-        showToast('Successfully logged in!', 'success')
+        showToast('로그인 성공!', 'success')
       } else {
         const errorData = await response.json()
-        setLoginError(errorData.message || 'Login failed')
+        setLoginError(errorData.message || '로그인 실패')
       }
     } catch (error) {
-      setLoginError('Network error. Please check your connection.')
+      setLoginError('네트워크 오류. 연결을 확인해주세요.')
     } finally {
       setIsLoggingIn(false)
     }
@@ -66,7 +66,7 @@ const MobileLogin: React.FC<MobileLoginProps> = ({ onAuthChange }) => {
 
   const handleSignup = async () => {
     if (!loginForm.email || !loginForm.password) {
-      setLoginError('Please fill in all fields')
+      setLoginError('모든 필드를 입력해주세요')
       return
     }
 
@@ -83,17 +83,17 @@ const MobileLogin: React.FC<MobileLoginProps> = ({ onAuthChange }) => {
       })
 
       if (response.status === 201) {
-        showToast('Account created successfully! Logging in...', 'success')
+        showToast('계정 생성 성공! 로그인 중...', 'success')
         // Auto-login after successful signup
         const loginEvent = new Event('submit') as any
         loginEvent.preventDefault = () => {}
         await handleLogin(loginEvent)
       } else {
         const errorData = await response.json()
-        setLoginError(errorData.error || 'Signup failed')
+        setLoginError(errorData.error || '회원가입 실패')
       }
     } catch (error) {
-      setLoginError('Network error. Please check your connection.')
+      setLoginError('네트워크 오류. 연결을 확인해주세요.')
     } finally {
       setIsLoggingIn(false)
     }
@@ -115,14 +115,14 @@ const MobileLogin: React.FC<MobileLoginProps> = ({ onAuthChange }) => {
 
       if (response.ok) {
         await response.json()
-        showToast('Desktop login approved successfully!', 'success')
+        showToast('데스크톱 로그인 승인 성공!', 'success')
         setShowScanner(false)
       } else {
         const errorData = await response.json()
-        showToast(`Failed to approve login: ${errorData.message}`, 'error')
+        showToast(`로그인 승인 실패: ${errorData.message}`, 'error')
       }
     } catch (error) {
-      showToast('Error approving login. Please try again.', 'error')
+      showToast('로그인 승인 오류. 다시 시도해주세요.', 'error')
     }
   }
 
@@ -131,21 +131,21 @@ const MobileLogin: React.FC<MobileLoginProps> = ({ onAuthChange }) => {
     setIsAuthenticated(false)
     setUserToken('')
     onAuthChange?.(false)
-    showToast('Successfully logged out', 'info')
+    showToast('로그아웃 되었습니다', 'info')
   }
 
   if (!isAuthenticated) {
     return (
       <div className="mobile-login">
         <div className="login-container">
-          <h2>📱 Mobile Login</h2>
-          <p>Login to your account to scan QR codes</p>
+          <h2>📱 모바일 로그인</h2>
+          <p>QR 코드 스캔을 위해 로그인하세요</p>
           
           <form onSubmit={handleLogin} className="login-form">
             <div className="form-group">
               <input
                 type="email"
-                placeholder="Email"
+                placeholder="이메일"
                 value={loginForm.email}
                 onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })}
                 required
@@ -156,7 +156,7 @@ const MobileLogin: React.FC<MobileLoginProps> = ({ onAuthChange }) => {
             <div className="form-group">
               <input
                 type="password"
-                placeholder="Password (min 8 characters)"
+                placeholder="비밀번호 (최소 8자)"
                 value={loginForm.password}
                 onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
                 required
@@ -177,7 +177,7 @@ const MobileLogin: React.FC<MobileLoginProps> = ({ onAuthChange }) => {
                 disabled={isLoggingIn}
                 className="login-btn"
               >
-                {isLoggingIn ? 'Logging in...' : 'Login'}
+                {isLoggingIn ? '로그인 중...' : '로그인'}
               </button>
               
               <button 
@@ -186,20 +186,20 @@ const MobileLogin: React.FC<MobileLoginProps> = ({ onAuthChange }) => {
                 disabled={isLoggingIn}
                 className="signup-btn"
               >
-                {isLoggingIn ? 'Signing up...' : 'Sign Up'}
+                {isLoggingIn ? '가입 중...' : '회원가입'}
               </button>
             </div>
           </form>
           
           <div className="demo-credentials">
-            <h3>Demo Accounts:</h3>
+            <h3>테스트 계정:</h3>
             <div className="demo-account">
-              <strong>Admin:</strong>
+              <strong>관리자:</strong>
               <p>📧 admin@example.com</p>
               <p>🔑 admin123</p>
             </div>
             <div className="demo-account">
-              <strong>User:</strong>
+              <strong>사용자:</strong>
               <p>📧 user@example.com</p>
               <p>🔑 user123</p>
             </div>
@@ -212,26 +212,26 @@ const MobileLogin: React.FC<MobileLoginProps> = ({ onAuthChange }) => {
   return (
     <div className="mobile-authenticated">
       <div className="auth-container">
-        <h2>📱 Mobile - Authenticated</h2>
-        <p>You are logged in and ready to scan QR codes</p>
+        <h2>📱 모바일 - 인증됨</h2>
+        <p>로그인되었습니다. QR 코드를 스캔할 준비가 되었습니다</p>
         
         <div className="user-info">
           <div className="auth-status">
             <span className="status-indicator">🟢</span>
-            <span>Authenticated</span>
+            <span>인증됨</span>
           </div>
         </div>
         
         <div className="scanner-section">
           {!showScanner ? (
             <div className="scanner-prompt">
-              <h3>Ready to scan QR code</h3>
-              <p>Scan a QR code from a desktop to approve login</p>
+              <h3>QR 코드 스캔 준비</h3>
+              <p>데스크톱의 QR 코드를 스캔하여 로그인을 승인하세요</p>
               <button 
                 onClick={() => setShowScanner(true)}
                 className="scan-btn"
               >
-                📷 Start QR Scanner
+                📷 QR 스캐너 시작
               </button>
             </div>
           ) : (
@@ -241,26 +241,26 @@ const MobileLogin: React.FC<MobileLoginProps> = ({ onAuthChange }) => {
                 onClick={() => setShowScanner(false)}
                 className="close-scanner-btn"
               >
-                ✕ Close Scanner
+                ✕ 스캐너 닫기
               </button>
             </div>
           )}
         </div>
         
         <div className="mobile-instructions">
-          <h3>How to approve desktop login:</h3>
+          <h3>데스크톱 로그인 승인 방법:</h3>
           <ol>
-            <li>Go to the desktop version of this app</li>
-            <li>A QR code will be displayed on the desktop</li>
-            <li>Click "Start QR Scanner" above</li>
-            <li>Point your camera at the QR code</li>
-            <li>Approve the login when prompted</li>
+            <li>데스크톱 버전으로 이동하세요</li>
+            <li>데스크톱에 QR 코드가 표시됩니다</li>
+            <li>위의 "QR 스캐너 시작" 버튼을 클릭하세요</li>
+            <li>카메라를 QR 코드에 비춰주세요</li>
+            <li>로그인 승인 메시지가 나타나면 승인하세요</li>
           </ol>
         </div>
         
         <div className="logout-section">
           <button onClick={handleLogout} className="logout-btn">
-            🚪 Logout
+            🚪 로그아웃
           </button>
         </div>
       </div>

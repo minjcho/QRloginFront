@@ -18,11 +18,11 @@ function App() {
       <div className="app">
         <ToastContainer />
         <header className="app-header">
-          <h1>QR Login System</h1>
-          <p>Secure authentication with QR codes</p>
+          <h1>QR 로그인 시스템</h1>
+          <p>안전한 QR 코드 인증</p>
           {isAuthenticated && (
             <nav className="nav-menu">
-              <Link to="/" className="nav-link">Home</Link>
+              <Link to="/" className="nav-link">홈</Link>
               <Link to="/orin-id" className="nav-link">OrinId 관리</Link>
               <button 
                 className="logout-btn"

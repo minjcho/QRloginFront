@@ -160,20 +160,15 @@ class OrinIdService {
       return { valid: false, message: 'OrinId를 입력해주세요' }
     }
 
-    if (orinId.length < 3) {
-      return { valid: false, message: 'OrinId는 최소 3자 이상이어야 합니다' }
+    if (orinId.length < 1) {
+      return { valid: false, message: 'OrinId는 최소 1자 이상이어야 합니다' }
     }
 
-    if (orinId.length > 50) {
-      return { valid: false, message: 'OrinId는 50자를 초과할 수 없습니다' }
+    if (orinId.length > 100) {
+      return { valid: false, message: 'OrinId는 100자를 초과할 수 없습니다' }
     }
 
-    // Allow alphanumeric characters, hyphens, and underscores
-    const pattern = /^[a-zA-Z0-9-_]+$/
-    if (!pattern.test(orinId)) {
-      return { valid: false, message: 'OrinId는 영문, 숫자, 하이픈(-), 언더스코어(_)만 사용 가능합니다' }
-    }
-
+    // Allow any characters for maximum flexibility
     return { valid: true }
   }
 }
