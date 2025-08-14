@@ -82,7 +82,6 @@ const OrinIdManagement: React.FC = () => {
       await orinIdService.deleteMyOrinId()
       setCurrentOrinId('')
       setShowScanner(true) // Show scanner after deletion
-      setToast({ message: 'OrinId가 삭제되었습니다', type: 'success' })
     } catch (error: any) {
       setToast({ message: error.message || 'OrinId 삭제에 실패했습니다', type: 'error' })
     } finally {
@@ -104,7 +103,6 @@ const OrinIdManagement: React.FC = () => {
     setShowScanner(false)
     setShowManualInput(true)
     setIsEditing(true)
-    setToast({ message: 'QR 코드에서 OrinId를 읽었습니다', type: 'success' })
   }
 
   const handleManualInputClick = () => {
