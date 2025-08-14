@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import orinIdService from '../services/orinIdService'
 import type { OrinIdResponse } from '../services/orinIdService'
+import OrinIdScanner from './OrinIdScanner'
 import Toast from './Toast'
 import './OrinIdManagement.css'
 
@@ -11,6 +12,8 @@ const OrinIdManagement: React.FC = () => {
   const [searchResult, setSearchResult] = useState<OrinIdResponse | null>(null)
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [isEditing, setIsEditing] = useState<boolean>(false)
+  const [showScanner, setShowScanner] = useState<boolean>(false)
+  const [showSearchScanner, setShowSearchScanner] = useState<boolean>(false)
   const [availabilityMessage, setAvailabilityMessage] = useState<string>('')
   const [isAvailable, setIsAvailable] = useState<boolean | null>(null)
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
@@ -96,15 +99,36 @@ const OrinIdManagement: React.FC = () => {
     }
   }
 
-  const handleSearch = async () => {
-    if (!searchOrinId) {
+
+  const handleCancelEdit = () => {
+    setIsEditing(false)
+    setNewOrinId('')
+    setAvailabilityMessage('')
+    setIsAvailable(null)
+  }
+
+  const handleScanSuccess = (scannedOrinId: string) => {
+    setNewOrinId(scannedOrinId)
+    setShowScanner(false)
+    setToast({ message: 'QR 코드에서 OrinId를 읽었습니다', type: 'success' })
+  }
+
+  const handleSearchScanSuccess = (scannedOrinId: string) => {
+    setSearchOrinId(scannedOrinId)
+    setShowSearchScanner(false)
+    handleSearch(scannedOrinId)
+  }
+
+  const handleSearch = async (orinId?: string) => {
+    const searchId = orinId || searchOrinId
+    if (!searchId) {
       setToast({ message: '검색할 OrinId를 입력해주세요', type: 'error' })
       return
     }
 
     try {
       setIsLoading(true)
-      const response = await orinIdService.getUserByOrinId(searchOrinId)
+      const response = await orinIdService.getUserByOrinId(searchId)
       setSearchResult(response)
     } catch (error: any) {
       setSearchResult(null)
@@ -112,13 +136,6 @@ const OrinIdManagement: React.FC = () => {
     } finally {
       setIsLoading(false)
     }
-  }
-
-  const handleCancelEdit = () => {
-    setIsEditing(false)
-    setNewOrinId('')
-    setAvailabilityMessage('')
-    setIsAvailable(null)
   }
 
   return (
@@ -174,14 +191,24 @@ const OrinIdManagement: React.FC = () => {
           ) : (
             <div className="edit-orin-id">
               <div className="input-group">
-                <input
-                  type="text"
-                  className={`orin-input ${isAvailable === true ? 'valid' : isAvailable === false ? 'invalid' : ''}`}
-                  placeholder="새 OrinId 입력"
-                  value={newOrinId}
-                  onChange={(e) => setNewOrinId(e.target.value)}
-                  disabled={isLoading}
-                />
+                <div className="input-with-scan">
+                  <input
+                    type="text"
+                    className={`orin-input ${isAvailable === true ? 'valid' : isAvailable === false ? 'invalid' : ''}`}
+                    placeholder="새 OrinId 입력"
+                    value={newOrinId}
+                    onChange={(e) => setNewOrinId(e.target.value)}
+                    disabled={isLoading}
+                  />
+                  <button 
+                    className="scan-qr-btn"
+                    onClick={() => setShowScanner(true)}
+                    disabled={isLoading}
+                    title="QR 코드 스캔"
+                  >
+                    📷
+                  </button>
+                </div>
                 {availabilityMessage && (
                   <span className={`availability-message ${isAvailable ? 'available' : 'unavailable'}`}>
                     {availabilityMessage}
@@ -213,18 +240,28 @@ const OrinIdManagement: React.FC = () => {
           <h3 className="section-title">사용자 검색</h3>
           <div className="search-container">
             <div className="search-input-group">
-              <input
-                type="text"
-                className="orin-input"
-                placeholder="검색할 OrinId 입력"
-                value={searchOrinId}
-                onChange={(e) => setSearchOrinId(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                disabled={isLoading}
-              />
+              <div className="input-with-scan">
+                <input
+                  type="text"
+                  className="orin-input"
+                  placeholder="검색할 OrinId 입력"
+                  value={searchOrinId}
+                  onChange={(e) => setSearchOrinId(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                  disabled={isLoading}
+                />
+                <button 
+                  className="scan-qr-btn"
+                  onClick={() => setShowSearchScanner(true)}
+                  disabled={isLoading}
+                  title="QR 코드 스캔"
+                >
+                  📷
+                </button>
+              </div>
               <button 
                 className="btn btn-primary search-btn"
-                onClick={handleSearch}
+                onClick={() => handleSearch()}
                 disabled={isLoading}
               >
                 <span className="search-icon">🔍</span>
@@ -270,6 +307,21 @@ const OrinIdManagement: React.FC = () => {
           message={toast.message}
           type={toast.type}
           onClose={() => setToast(null)}
+        />
+      )}
+
+      {/* QR Scanner Modals */}
+      {showScanner && (
+        <OrinIdScanner
+          onScanSuccess={handleScanSuccess}
+          onClose={() => setShowScanner(false)}
+        />
+      )}
+
+      {showSearchScanner && (
+        <OrinIdScanner
+          onScanSuccess={handleSearchScanSuccess}
+          onClose={() => setShowSearchScanner(false)}
         />
       )}
     </div>

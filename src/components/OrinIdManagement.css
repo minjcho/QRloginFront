@@ -131,6 +131,51 @@
   margin-bottom: 16px;
 }
 
+/* Input with Scan Button */
+.input-with-scan {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  position: relative;
+}
+
+.input-with-scan .orin-input {
+  flex: 1;
+  padding-right: 50px;
+}
+
+.scan-qr-btn {
+  position: absolute;
+  right: 8px;
+  background: #667eea;
+  color: white;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 18px;
+}
+
+.scan-qr-btn:hover {
+  background: #5a67d8;
+  transform: scale(1.05);
+}
+
+.scan-qr-btn:active {
+  transform: scale(0.95);
+}
+
+.scan-qr-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
 .orin-input {
   width: 100%;
   padding: 12px 16px;
@@ -265,9 +310,10 @@
   display: flex;
   gap: 12px;
   margin-bottom: 20px;
+  align-items: center;
 }
 
-.search-input-group .orin-input {
+.search-input-group .input-with-scan {
   flex: 1;
 }
 
