@@ -1,0 +1,107 @@
+/* Mobile specific styles for login component */
+.auth-container {
+  width: 100%;
+  padding: 0;
+}
+
+.user-info {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.auth-status {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  justify-content: center;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.scanner-prompt {
+  text-align: center;
+}
+
+.scanner-prompt h3 {
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+}
+
+.scanner-prompt p {
+  margin-bottom: 1.5rem;
+  color: var(--text-secondary);
+}
+
+.scanner-active {
+  position: relative;
+}
+
+.logout-section {
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .glass-container {
+    padding: 1.5rem !important;
+    margin: 0 !important;
+    border-radius: var(--radius-lg) !important;
+  }
+  
+  .container-header h2 {
+    font-size: 1.75rem !important;
+  }
+  
+  .form-group label {
+    font-size: 0.875rem;
+  }
+  
+  .form-input {
+    font-size: 1rem;
+    padding: 0.75rem;
+  }
+  
+  .demo-credentials {
+    margin-top: 1.5rem;
+    padding: 1rem;
+  }
+  
+  .demo-account {
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .demo-account:last-child {
+    margin-bottom: 0;
+  }
+  
+  .instructions-box {
+    padding: 1.25rem;
+    margin-top: 1.5rem;
+  }
+  
+  .instructions-box h3 {
+    font-size: 1.1rem;
+  }
+  
+  .instructions-box ol {
+    font-size: 0.9rem;
+    padding-left: 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .glass-container {
+    border-radius: var(--radius-md) !important;
+  }
+  
+  .container-header h2 {
+    font-size: 1.5rem !important;
+  }
+  
+  .container-header p {
+    font-size: 0.875rem !important;
+  }
+}

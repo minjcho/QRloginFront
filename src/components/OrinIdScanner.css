@@ -1,13 +1,15 @@
 /* Inline Scanner Container */
 .inline-scanner-container {
   width: 100%;
+  max-width: 100%;
   animation: fadeIn 0.3s ease;
 }
 
 .scanner-viewport-inline {
   position: relative;
   width: 100%;
-  height: 350px;
+  max-width: 100%;
+  aspect-ratio: 1;
   background: #000;
   border-radius: 12px;
   overflow: hidden;
@@ -234,14 +236,21 @@
 .scanner-viewport {
   position: relative;
   width: 100%;
-  height: 400px;
+  aspect-ratio: 4/3;
+  max-height: 400px;
   background: #000;
   overflow: hidden;
 }
 
 .scanner-video {
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
   object-fit: cover;
 }
 
@@ -261,7 +270,9 @@
   position: relative;
   width: 250px;
   height: 250px;
+  max-width: 80%;
   border: 2px solid rgba(255, 255, 255, 0.3);
+  aspect-ratio: 1;
 }
 
 .corner {
@@ -412,37 +423,70 @@
 /* Responsive Design */
 @media (max-width: 768px) {
   .orin-scanner-container {
-    width: 95%;
-    max-height: 95vh;
+    width: 100%;
+    height: 100%;
+    max-height: 100vh;
+    border-radius: 0;
   }
 
   .scanner-viewport {
-    height: 350px;
+    aspect-ratio: 1;
+    max-height: 60vh;
+  }
+  
+  .scanner-viewport-inline {
+    aspect-ratio: 4/3;
+    max-height: 300px;
   }
 
   .scanner-frame {
-    width: 200px;
-    height: 200px;
+    width: 60%;
+    max-width: 200px;
+    aspect-ratio: 1;
+    height: auto;
   }
 
   .corner {
     width: 25px;
     height: 25px;
   }
+  
+  .scanner-header {
+    padding: 15px;
+  }
+  
+  .permission-prompt,
+  .permission-denied {
+    padding: 30px 15px;
+  }
+  
+  .scanner-instructions {
+    padding: 15px;
+  }
 }
 
 @media (max-width: 480px) {
   .scanner-viewport {
-    height: 300px;
+    aspect-ratio: 1;
+    max-height: 50vh;
+  }
+  
+  .scanner-viewport-inline {
+    aspect-ratio: 1;
+    max-height: 250px;
   }
 
   .scanner-frame {
-    width: 180px;
-    height: 180px;
+    width: 70%;
+    max-width: 180px;
   }
 
   .scanner-header h3 {
     font-size: 18px;
+  }
+  
+  .scanner-header {
+    padding: 12px;
   }
 
   .permission-prompt h4,
@@ -453,5 +497,18 @@
   .camera-icon,
   .error-icon {
     font-size: 48px;
+  }
+  
+  .scanner-instructions {
+    padding: 12px;
+    font-size: 0.875rem;
+  }
+  
+  .scanner-instructions p {
+    font-size: 0.875rem;
+  }
+  
+  .format-hint {
+    font-size: 0.75rem;
   }
 }

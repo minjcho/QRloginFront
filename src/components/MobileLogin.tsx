@@ -3,6 +3,7 @@ import QrScanner from './QrScanner'
 import { getApiUrl } from '../config/api'
 import { showToast } from './Toast'
 import authService from '../services/authService'
+import './MobileLogin.css'
 
 interface MobileLoginProps {
   onLogin?: (token: string) => void
