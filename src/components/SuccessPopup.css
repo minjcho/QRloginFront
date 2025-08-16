@@ -1,116 +1,157 @@
-/* Success Popup Overlay */
 .success-popup-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
+  inset: 0;
+  background: rgba(10, 11, 13, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 3000;
-  animation: fadeIn 0.3s ease;
+  z-index: 5000;
+  animation: fadeIn 0.3s ease-out;
 }
 
-/* Success Popup Container */
 .success-popup {
-  background: white;
-  border-radius: 20px;
-  padding: 40px;
-  max-width: 400px;
+  background: var(--bg-card);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  padding: 3rem;
+  max-width: 420px;
   width: 90%;
   text-align: center;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  animation: scaleIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  box-shadow: var(--shadow-xl), 0 0 100px rgba(102, 126, 234, 0.2);
+  animation: popupScaleIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
   position: relative;
   overflow: hidden;
 }
 
-/* Success Animation */
+.success-popup::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
+  animation: rotate 20s linear infinite;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .success-animation {
-  margin-bottom: 24px;
+  margin-bottom: 2rem;
   display: flex;
   justify-content: center;
+  position: relative;
+  z-index: 1;
 }
 
 .success-circle {
-  width: 80px;
-  height: 80px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: var(--primary-gradient);
   display: flex;
   justify-content: center;
   align-items: center;
-  animation: pulseGrow 0.6s ease-out;
-  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+  animation: circleGrow 0.6s ease-out;
+  box-shadow: 0 8px 40px rgba(102, 126, 234, 0.4),
+              inset 0 2px 10px rgba(255, 255, 255, 0.2);
+  position: relative;
+}
+
+.success-circle::after {
+  content: '';
+  position: absolute;
+  inset: -20px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(102, 126, 234, 0.2) 0%, transparent 70%);
+  animation: pulse 2s ease-in-out infinite;
 }
 
 .success-checkmark {
   position: relative;
-  width: 40px;
-  height: 40px;
-  animation: checkmarkAnimation 0.8s ease-out 0.3s both;
+  width: 50px;
+  height: 50px;
+  animation: checkmarkRotate 0.8s ease-out 0.3s both;
 }
 
 .checkmark-stem {
   position: absolute;
-  width: 3px;
-  height: 28px;
+  width: 4px;
+  height: 35px;
   background: white;
-  left: 23px;
-  top: 6px;
+  left: 28px;
+  top: 7px;
   transform: rotate(45deg);
-  animation: stemAnimation 0.4s ease-out 0.4s both;
+  animation: stemGrow 0.4s ease-out 0.4s both;
   transform-origin: bottom;
+  border-radius: 2px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .checkmark-kick {
   position: absolute;
-  width: 3px;
-  height: 14px;
+  width: 4px;
+  height: 18px;
   background: white;
-  left: 10px;
-  top: 20px;
+  left: 12px;
+  top: 25px;
   transform: rotate(-45deg);
-  animation: kickAnimation 0.3s ease-out 0.6s both;
+  animation: kickGrow 0.3s ease-out 0.6s both;
   transform-origin: bottom;
+  border-radius: 2px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Success Title */
 .success-title {
-  font-size: 28px;
-  color: #2c3e50;
-  margin: 0 0 12px 0;
-  font-weight: 600;
-  animation: slideUp 0.5s ease-out 0.4s both;
+  font-size: 2rem;
+  margin: 0 0 1rem 0;
+  font-weight: 800;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: titleSlideUp 0.5s ease-out 0.4s both;
+  position: relative;
+  z-index: 1;
 }
 
-/* Success Message */
 .success-message {
-  font-size: 16px;
-  color: #5a6c7d;
-  margin: 0 0 24px 0;
-  line-height: 1.5;
-  animation: slideUp 0.5s ease-out 0.5s both;
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  margin: 0 0 2rem 0;
+  line-height: 1.6;
+  animation: messageSlideUp 0.5s ease-out 0.5s both;
+  position: relative;
+  z-index: 1;
 }
 
-/* Progress Bar */
 .success-progress {
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  height: 4px;
-  background: #e0e0e0;
+  height: 3px;
+  background: var(--bg-secondary);
   overflow: hidden;
 }
 
 .progress-bar {
   height: 100%;
-  background: linear-gradient(90deg, #667eea, #764ba2);
-  animation: progressAnimation 3000ms linear;
+  background: var(--primary-gradient);
+  animation: progressSlide 3000ms linear;
   transform-origin: left;
+  box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
 }
 
 /* Animations */
@@ -123,35 +164,38 @@
   }
 }
 
-@keyframes scaleIn {
-  from {
+@keyframes popupScaleIn {
+  0% {
     opacity: 0;
-    transform: scale(0.5);
+    transform: scale(0.7) translateY(20px);
   }
-  to {
+  50% {
+    transform: scale(1.02) translateY(-5px);
+  }
+  100% {
     opacity: 1;
-    transform: scale(1);
+    transform: scale(1) translateY(0);
   }
 }
 
-@keyframes pulseGrow {
+@keyframes circleGrow {
   0% {
-    transform: scale(0);
+    transform: scale(0) rotate(180deg);
     opacity: 0;
   }
   50% {
-    transform: scale(1.1);
+    transform: scale(1.1) rotate(90deg);
   }
   100% {
-    transform: scale(1);
+    transform: scale(1) rotate(0deg);
     opacity: 1;
   }
 }
 
-@keyframes checkmarkAnimation {
+@keyframes checkmarkRotate {
   from {
     opacity: 0;
-    transform: scale(0) rotate(45deg);
+    transform: scale(0) rotate(-45deg);
   }
   to {
     opacity: 1;
@@ -159,29 +203,44 @@
   }
 }
 
-@keyframes stemAnimation {
+@keyframes stemGrow {
   from {
     height: 0;
     opacity: 0;
+    transform: rotate(45deg) scale(0);
   }
   to {
-    height: 28px;
+    height: 35px;
     opacity: 1;
+    transform: rotate(45deg) scale(1);
   }
 }
 
-@keyframes kickAnimation {
+@keyframes kickGrow {
   from {
     height: 0;
     opacity: 0;
+    transform: rotate(-45deg) scale(0);
   }
   to {
-    height: 14px;
+    height: 18px;
     opacity: 1;
+    transform: rotate(-45deg) scale(1);
   }
 }
 
-@keyframes slideUp {
+@keyframes titleSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes messageSlideUp {
   from {
     opacity: 0;
     transform: translateY(20px);
@@ -192,7 +251,7 @@
   }
 }
 
-@keyframes progressAnimation {
+@keyframes progressSlide {
   from {
     transform: scaleX(1);
   }
@@ -201,40 +260,51 @@
   }
 }
 
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.2;
+  }
+}
+
 /* Mobile Responsive */
 @media (max-width: 480px) {
   .success-popup {
-    padding: 32px 24px;
+    padding: 2.5rem 2rem;
     max-width: 90%;
   }
 
   .success-circle {
-    width: 70px;
-    height: 70px;
+    width: 80px;
+    height: 80px;
   }
 
   .success-checkmark {
-    width: 35px;
-    height: 35px;
+    width: 40px;
+    height: 40px;
   }
 
   .checkmark-stem {
-    height: 24px;
-    left: 20px;
-    top: 5px;
+    height: 28px;
+    left: 23px;
+    top: 6px;
   }
 
   .checkmark-kick {
-    height: 12px;
-    left: 9px;
-    top: 17px;
+    height: 14px;
+    left: 10px;
+    top: 20px;
   }
 
   .success-title {
-    font-size: 24px;
+    font-size: 1.75rem;
   }
 
   .success-message {
-    font-size: 14px;
+    font-size: 1rem;
   }
 }
